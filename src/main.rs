@@ -1,3 +1,13 @@
+use git::Git;
+
+
+
+mod git;
+
+
 fn main() {
-    println!("Hello, world!");
+
+    let mut g : Git = Git{};
+    g.hello_world();
+
 }
