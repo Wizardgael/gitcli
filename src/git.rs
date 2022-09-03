@@ -26,10 +26,12 @@ impl Git{
         .expect("Error during command")
     }
 
-    pub fn hello_world(&self){
-        let output = Git::command("echo".into(), vec!["Hello World!".into()]);
+
+    pub fn untracked_file(&self){
+        let output = Git::command("git".into(), vec!["ls-files".into(), ".".into(), "--exclude-standard".into(), "--others".into()]);
         println!("{:?}", output);
         println!("{:?}", output.stdout);
+
     }
     
 }

@@ -1,13 +1,10 @@
 use git::Git;
 
-
-
 mod git;
-
 
 fn main() {
 
-    let mut g : Git = Git{};
-    g.hello_world();
+    let g : Git = Git{};
+    g.untracked_file();
 
 }
