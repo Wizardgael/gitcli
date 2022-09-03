@@ -1,5 +1,5 @@
 use std::process::{Command, Output};
-
+use std::str;
 
 
 
@@ -9,7 +9,7 @@ pub struct Git{
 
 impl Git{
 
-    fn command(com: String, arg: Vec<String>) -> Output{
+    fn command(com: String) -> Output{
         let mut command = if cfg!(target_os = "windows"){
             let mut c = Command::new("cmd");
             c.arg("/C");
@@ -20,18 +20,18 @@ impl Git{
             c
         };
         command.arg(com);
-        command.args(arg);
 
-        command.output()
-        .expect("Error during command")
+        command.output().expect("Error during command")
     }
 
 
-    pub fn untracked_file(&self){
-        let output = Git::command("git".into(), vec!["ls-files".into(), ".".into(), "--exclude-standard".into(), "--others".into()]);
-        println!("{:?}", output);
-        println!("{:?}", output.stdout);
-
+    pub fn untracked_file(&self) -> Result<Vec<String>, String>{
+        let output = Git::command("git ls-files . --exclude-standard --others".into());
+        if let Ok(s) = String::from_utf8(output.stdout) {
+            Ok(s.trim().split("\n").map(|f| f.to_string()).collect())
+        }else {
+            return Err("Error reading untracked files".into())
+        }
     }
     
 }
