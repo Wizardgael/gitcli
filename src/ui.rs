@@ -1,3 +1,6 @@
+
+mod file;
+
 use std::{error::{Error}, io};
 
 use crossterm::{
@@ -19,15 +22,18 @@ use tui::{
     layout::{Layout, Direction, Constraint}
 };
 
+use self::file::UiFile;
+
 pub struct UI{
-    
+   fileComponent: UiFile 
 }
+
 
 impl UI{
 
     pub fn new() -> Self {
         Self {  
-
+            fileComponent: UiFile::new()
         }
     }
 
@@ -53,7 +59,7 @@ impl UI{
 
     fn run_app<B: Backend>(&self, terminal: &mut Terminal<B>) -> io::Result<()> {
         loop {
-            terminal.draw(UI::ui)?;
+            terminal.draw(|f| self.ui(f))?;
 
             if let Event::Key(key) = crossterm::event::read()? {
                 if let KeyCode::Char('q') = key.code {
@@ -63,8 +69,7 @@ impl UI{
         }
     }
 
-    fn ui<B: Backend>(f: &mut Frame<B>){
-        let size = f.size();
+    fn ui<B: Backend>(&self, f: &mut Frame<B>){
 
         let block = Block::default()
         .borders(Borders::ALL)
@@ -72,14 +77,14 @@ impl UI{
         .title_alignment(tui::layout::Alignment::Left)
         .border_type(tui::widgets::BorderType::Rounded);
         
-        f.render_widget(block, size);
+        f.render_widget(block, f.size());
 
         let chunks = Layout::default()
         .direction(Direction::Horizontal)
         .margin(1)
         .constraints([
-            Constraint::Percentage(50), 
-            Constraint::Percentage(50)
+            Constraint::Percentage(75), 
+            Constraint::Percentage(25)
         ].as_ref())
         .split(f.size());
 
@@ -92,6 +97,30 @@ impl UI{
 
         f.render_widget(files, chunks[1]);
 
+        self.fileComponent.render(f, chunks[1]);
+
+        let main_chunks = Layout::default()
+        .direction(Direction::Vertical)
+        .margin(0)
+        .constraints([
+            Constraint::Percentage(50),
+            Constraint::Percentage(50)
+        ].as_ref())
+        .split(chunks[0]);
+
+        let commands = Block::default()
+        .borders(Borders::ALL)
+        .title(" Commands ")
+        .title_alignment(tui::layout::Alignment::Left)
+        .border_type(tui::widgets::BorderType::Rounded);
+        f.render_widget(commands, main_chunks[0]);
+
+        let output = Block::default()
+        .borders(Borders::ALL)
+        .title(" Output ")
+        .title_alignment(tui::layout::Alignment::Left)
+        .border_type(tui::widgets::BorderType::Rounded);
+        f.render_widget(output, main_chunks[1]);
     }
     
 }
