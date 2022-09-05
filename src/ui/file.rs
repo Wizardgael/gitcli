@@ -13,8 +13,11 @@ impl UiFile{
     }
 
     pub fn render<B: Backend>(&self, f: &mut Frame<B>, size: Rect){
-        if let Ok(fileString) = Git::get_file() {
-            let itemsList: Vec<ListItem> = fileString.iter().map(|file|{
+        if let Ok(file_string) = Git::get_file() {
+            let mut size = size.clone();
+            size.y -= 1;
+            size.x +=1;
+            let items_list: Vec<ListItem> = file_string.iter().map(|file|{
                 let mut line: Vec<Spans> = Vec::new();
                 match file {
                     GitFile::FileModified(name) => {
@@ -41,10 +44,10 @@ impl UiFile{
                 }
                 ListItem::new(line).style(Style::default())
             }).collect();
-            let items = List::new(itemsList);
+            let items = List::new(items_list);
 
             let new_size = Layout::default()
-            .margin(2)
+            .margin(1)
             .constraints([Constraint::Percentage(100)].as_ref())
             .split(size);
             

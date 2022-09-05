@@ -25,7 +25,7 @@ use tui::{
 use self::file::UiFile;
 
 pub struct UI{
-   fileComponent: UiFile 
+   file_component: UiFile 
 }
 
 
@@ -33,14 +33,14 @@ impl UI{
 
     pub fn new() -> Self {
         Self {  
-            fileComponent: UiFile::new()
+            file_component: UiFile::new()
         }
     }
 
     pub fn init(&self) -> Result<(), Box<dyn Error>> {
         enable_raw_mode()?;
         let mut stdout = io::stdout();
-        execute!(stdout, EnterAlternateScreen, EnableMouseCapture);
+        execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
         let backend = CrosstermBackend::new(stdout);
         let mut terminal = Terminal::new(backend)?;
 
@@ -97,7 +97,7 @@ impl UI{
 
         f.render_widget(files, chunks[1]);
 
-        self.fileComponent.render(f, chunks[1]);
+        self.file_component.render(f, chunks[1]);
 
         let main_chunks = Layout::default()
         .direction(Direction::Vertical)

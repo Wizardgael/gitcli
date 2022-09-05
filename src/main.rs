@@ -1,12 +1,12 @@
-use git::Git;
 use ui::UI;
+use std::error::Error; 
 
 mod git;
 mod ui;
 
-fn main() {
-    
-    let mut ui = UI::new();
-    ui.init();
+fn main() -> Result<(), Box<dyn Error>>{
+    let ui = UI::new();
+    ui.init()?;
+    Ok(())
 
 }

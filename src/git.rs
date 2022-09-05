@@ -88,16 +88,16 @@ impl Git{
             res.push(GitFile::FileChached(f.clone()));
         });
         res.sort_by(|a, b| {
-            let name_a = match a {
-                GitFile::FileChached(name) => name,
-                GitFile::FileModified(name) => name,
-                GitFile::FileUntracked(name) => name
-            };
-            let name_b = match a {
-                GitFile::FileChached(name) => name,
-                GitFile::FileModified(name) => name,
-                GitFile::FileUntracked(name) => name
-            };
+        let name_a = match a {
+            GitFile::FileChached(name) => name,
+            GitFile::FileModified(name) => name,
+            GitFile::FileUntracked(name) => name
+        };
+        let name_b = match b {
+            GitFile::FileChached(name) => name,
+            GitFile::FileModified(name) => name,
+            GitFile::FileUntracked(name) => name
+        };
             name_a.cmp(name_b)
         });
         Ok(res)
