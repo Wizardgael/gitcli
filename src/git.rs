@@ -1,6 +1,4 @@
 use std::process::{Command, Output};
-use std::str;
-
 
 #[derive(PartialEq, PartialOrd, Eq, Ord)]
 pub enum GitFile{
@@ -9,6 +7,17 @@ pub enum GitFile{
     FileModified(String)
 }
 
+impl GitFile {
+
+    pub fn name(&self) -> String {
+        match self {
+            GitFile::FileChached(name) => name.clone(),
+            GitFile::FileModified(name) => name.clone(),
+            GitFile::FileUntracked(name) => name.clone()
+        }
+    }
+
+}
 
 pub struct Git{
 
@@ -88,17 +97,7 @@ impl Git{
             res.push(GitFile::FileChached(f.clone()));
         });
         res.sort_by(|a, b| {
-        let name_a = match a {
-            GitFile::FileChached(name) => name,
-            GitFile::FileModified(name) => name,
-            GitFile::FileUntracked(name) => name
-        };
-        let name_b = match b {
-            GitFile::FileChached(name) => name,
-            GitFile::FileModified(name) => name,
-            GitFile::FileUntracked(name) => name
-        };
-            name_a.cmp(name_b)
+            a.name().cmp(&b.name())
         });
         Ok(res)
     }

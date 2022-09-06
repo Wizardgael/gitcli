@@ -1,5 +1,5 @@
 use tui::{backend::Backend, Frame, layout::{Rect, Layout, Constraint}, widgets::{ListItem, List}, text::{Spans, Span}, style::{Style, Color}};
-use crate::git::{GitFile, Git};
+use crate::{git::{GitFile, Git}, app::App};
 
 
 pub struct UiFile{}
@@ -12,7 +12,7 @@ impl UiFile{
         }
     }
 
-    pub fn render<B: Backend>(&self, f: &mut Frame<B>, size: Rect){
+    pub fn render<B: Backend>(&self, f: &mut Frame<B>, size: Rect, app: &mut App){
         if let Ok(file_string) = Git::get_file() {
             let mut size = size.clone();
             size.y -= 1;

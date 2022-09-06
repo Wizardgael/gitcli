@@ -22,6 +22,8 @@ use tui::{
     layout::{Layout, Direction, Constraint}
 };
 
+use crate::app::App;
+
 use self::file::UiFile;
 
 pub struct UI{
@@ -37,14 +39,14 @@ impl UI{
         }
     }
 
-    pub fn init(&self) -> Result<(), Box<dyn Error>> {
+    pub fn init(&self, app: &mut App) -> Result<(), Box<dyn Error>> {
         enable_raw_mode()?;
         let mut stdout = io::stdout();
         execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
         let backend = CrosstermBackend::new(stdout);
         let mut terminal = Terminal::new(backend)?;
 
-        let res = self.run_app(&mut terminal);
+        let res = self.run_app(&mut terminal, app);
 
         disable_raw_mode()?;
         execute!(terminal.backend_mut(), LeaveAlternateScreen, DisableMouseCapture)?;
@@ -57,9 +59,9 @@ impl UI{
         Ok(())
     }
 
-    fn run_app<B: Backend>(&self, terminal: &mut Terminal<B>) -> io::Result<()> {
+    fn run_app<B: Backend>(&self, terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
         loop {
-            terminal.draw(|f| self.ui(f))?;
+            terminal.draw(|f| self.ui(f, app))?;
 
             if let Event::Key(key) = crossterm::event::read()? {
                 if let KeyCode::Char('q') = key.code {
@@ -69,7 +71,7 @@ impl UI{
         }
     }
 
-    fn ui<B: Backend>(&self, f: &mut Frame<B>){
+    fn ui<B: Backend>(&self, f: &mut Frame<B>, app: &mut App){
 
         let block = Block::default()
         .borders(Borders::ALL)
@@ -97,7 +99,7 @@ impl UI{
 
         f.render_widget(files, chunks[1]);
 
-        self.file_component.render(f, chunks[1]);
+        self.file_component.render(f, chunks[1], app);
 
         let main_chunks = Layout::default()
         .direction(Direction::Vertical)
