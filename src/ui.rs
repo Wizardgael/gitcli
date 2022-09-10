@@ -1,12 +1,12 @@
 
 mod file;
 
-use std::{error::{Error}, io};
+use std::{error::{Error}, io, time::{Duration, Instant}};
 
 use crossterm::{
     terminal::{enable_raw_mode, EnterAlternateScreen, disable_raw_mode, LeaveAlternateScreen}, 
     execute, 
-    event::{EnableMouseCapture, Event, KeyCode, DisableMouseCapture}
+    event::{EnableMouseCapture, Event, KeyCode, DisableMouseCapture, self}
 };
 use tui::{
     backend::{
@@ -60,14 +60,25 @@ impl UI{
     }
 
     fn run_app<B: Backend>(&self, terminal: &mut Terminal<B>, app: &mut App) -> io::Result<()> {
+        // let tick_rate = Duration::from_millis(250);
+        // let mut last_tick = Instant::now();
         loop {
             terminal.draw(|f| self.ui(f, app))?;
-
-            if let Event::Key(key) = crossterm::event::read()? {
-                if let KeyCode::Char('q') = key.code {
-                    return Ok(())
+            //let timeout = tick_rate.checked_sub(last_tick.elapsed()).unwrap_or_else(|| Duration::from_secs(0));
+            //if event::poll(timeout)? {
+                if let Event::Key(key) = event::read()? {
+                    match key.code {
+                        KeyCode::Char('q') => return Ok(()),
+                        KeyCode::Left => app.files.unselect(),
+                        KeyCode::Down => app.files.next(),
+                        KeyCode::Up => app.files.previous(),
+                        _ => {},
+                    }
                 }
-            }
+            //}
+            // if last_tick.elapsed() >= tick_rate {
+            //     last_tick = Instant::now();
+            // }
         }
     }
 
